@@ -168,10 +168,11 @@ int main(int argc, char* argv[])
       0,      0,      0,      0,      0,      0,      1e-5f);
   float alphaR = 1.0f;
 
-  const char* trigName = "ASYNC_DETECT_PERIODICALLY";
-  chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_PERIODICALLY; //Runs the detection in the background, with a period, only tracking in the call to `find()`, period defaults to 15, i.e. out of 15 consecutive calls to `find()`, the background thread will be informed to run detection. After this, a new detection will be done as soon as a new image frame is presented in the call to `find()`. If the background thread takes more time than 15 calls to `find()`, it will be running as frequently as possible
+  const char* trigName = "ASYNC_DETECT_ALWAYS";
+
+  //chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_PERIODICALLY; //Runs the detection in the background, with a period, only tracking in the call to `find()`, period defaults to 15, i.e. out of 15 consecutive calls to `find()`, the background thread will be informed to run detection. After this, a new detection will be done as soon as a new image frame is presented in the call to `find()`. If the background thread takes more time than 15 calls to `find()`, it will be running as frequently as possible
   //chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::DETECT_PERIODICALLY; //tracking most of the time, eventually run a full detection
-  //chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_ALWAYS; //detection is run as frequently as possible, i.e a new detection is started as soon as the new image frame is presented in the call to `find()` after the previous detection is finished
+  chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_ALWAYS; //detection is run as frequently as possible, i.e a new detection is started as soon as the new image frame is presented in the call to `find()` after the previous detection is finished
 
   while ('q' != (keyPressed = (char) cv::waitKey(1)))
   {
