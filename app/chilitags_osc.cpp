@@ -43,6 +43,8 @@ int main(int argc, char* argv[])
   int cameraIndex = 0;
   int width = 0;
   int height = 0;
+  int fps = 30;
+  int millis = 1000.0/fps;
 
   for ( int i = 1; i < argc; i++ )
   {
@@ -135,6 +137,12 @@ int main(int argc, char* argv[])
     capture.set(CV_CAP_PROP_FRAME_HEIGHT, height);
 #endif
 
+#ifdef OPENCV3
+    capture.set(cv::CAP_PROP_FPS, fps);
+#else
+    capture.set(CV_CAP_PROP_FPS, fps);
+#endif
+
   cv::Mat projectionMat = cv::Mat::zeros(4,4,CV_64F);
   chilitags3D.getCameraMatrix().copyTo(projectionMat(cv::Rect(0,0,3,3)));
   cv::Matx44d projection = projectionMat;
@@ -168,13 +176,15 @@ int main(int argc, char* argv[])
       0,      0,      0,      0,      0,      0,      1e-5f);
   float alphaR = 1.0f;
 
+  chilitags3D.getChilitags().setDetectionPeriod( 10 );
+
   const char* trigName = "ASYNC_DETECT_PERIODICALLY";
 
   chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_PERIODICALLY; //Runs the detection in the background, with a period, only tracking in the call to `find()`, period defaults to 15, i.e. out of 15 consecutive calls to `find()`, the background thread will be informed to run detection. After this, a new detection will be done as soon as a new image frame is presented in the call to `find()`. If the background thread takes more time than 15 calls to `find()`, it will be running as frequently as possible
   //chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::DETECT_PERIODICALLY; //tracking most of the time, eventually run a full detection
   //chilitags::Chilitags::DetectionTrigger trig = chilitags::Chilitags::ASYNC_DETECT_ALWAYS; //detection is run as frequently as possible, i.e a new detection is started as soon as the new image frame is presented in the call to `find()` after the previous detection is finished
 
-  while ('q' != (keyPressed = (char) cv::waitKey(1)))
+  while ('q' != (keyPressed = (char) cv::waitKey(millis)))
   {
 
     switch ( keyPressed )
