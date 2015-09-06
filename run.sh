@@ -9,4 +9,6 @@ width=1024
 height=768
 ip="127.0.0.1"
 port=7000
-./build/app/chilitags_osc -d $device -i $calibration -w $width -h $height -a $ip -p $port
+fps=30
+detection_period=10
+./build/app/chilitags_osc -d $device -i $calibration -w $width -h $height -a $ip -p $port -f $fps -g $detection_period

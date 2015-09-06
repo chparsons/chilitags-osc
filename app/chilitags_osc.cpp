@@ -43,18 +43,8 @@ int main(int argc, char* argv[])
   int cameraIndex = 0;
   int width = 0;
   int height = 0;
-  int fps = 20;
-  int millis = 1000.0/fps;
-  int detection_period = 10;
-  bool log_time = false;
-  double t = (double)getTickCount();
-
-  cout 
-    << "DEFAULT_SIZE: " << DEFAULT_SIZE << "\n"
-    << "fps: " << fps << "\n"
-    << "millis: " << millis << "\n"
-    << "detection period: " << detection_period << "\n"
-    << endl;
+  int fps = 30;
+  int detection_period = 10; 
 
   for ( int i = 1; i < argc; i++ )
   {
@@ -88,7 +78,28 @@ int main(int argc, char* argv[])
     {
       port = std::atoi(argv[++i]);
     }
+
+    //time
+    else if ( strcmp(argv[i], "-f") == 0 )
+    {
+      fps = std::atoi(argv[++i]);
+    }
+    else if ( strcmp(argv[i], "-g") == 0 )
+    {
+      detection_period = std::atoi(argv[++i]);
+    }
   }
+
+  int millis = 1000.0/fps;
+  double real_fps = 0.0;
+  double t = (double)getTickCount();
+
+  cout 
+    << "DEFAULT_SIZE: " << DEFAULT_SIZE << "\n"
+    << "fps: " << fps << "\n"
+    << "millis: " << millis << "\n"
+    << "detection period: " << detection_period << "\n"
+    << endl;
 
   /*****************************/
   /*    osc                    */
@@ -200,10 +211,6 @@ int main(int argc, char* argv[])
     switch ( keyPressed )
     {
 
-      case 'o':
-        log_time = !log_time;
-        break;
-
       case 'f':
         filterEnabled = !filterEnabled;
         chilitags3D.enableFilter(filterEnabled);
@@ -272,8 +279,10 @@ int main(int argc, char* argv[])
         cv::Point(8,68),
         cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color);
 
+    ostringstream tlog;
+    tlog << real_fps << " fps of target " << fps << " fps";
     cv::putText(outputImage,
-        "(press 'o' to log fps)",
+        tlog.str(),
         cv::Point(8,84),
         cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color);
 
@@ -375,8 +384,7 @@ int main(int argc, char* argv[])
     double now = (double)getTickCount();
     double secs_elapsed = (now - t)/getTickFrequency();
     t = now;
-    if (log_time)
-      cout << (1./secs_elapsed) << " fps of target " << fps << endl;
+    real_fps = 1./secs_elapsed;
 
     cv::imshow("plab chilitags", outputImage);
   }
