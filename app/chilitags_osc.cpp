@@ -43,8 +43,18 @@ int main(int argc, char* argv[])
   int cameraIndex = 0;
   int width = 0;
   int height = 0;
-  int fps = 30;
+  int fps = 20;
   int millis = 1000.0/fps;
+  int detection_period = 10;
+  bool log_time = false;
+  double t = (double)getTickCount();
+
+  cout 
+    << "DEFAULT_SIZE: " << DEFAULT_SIZE << "\n"
+    << "fps: " << fps << "\n"
+    << "millis: " << millis << "\n"
+    << "detection period: " << detection_period << "\n"
+    << endl;
 
   for ( int i = 1; i < argc; i++ )
   {
@@ -176,7 +186,7 @@ int main(int argc, char* argv[])
       0,      0,      0,      0,      0,      0,      1e-5f);
   float alphaR = 1.0f;
 
-  chilitags3D.getChilitags().setDetectionPeriod( 10 );
+  chilitags3D.getChilitags().setDetectionPeriod( detection_period );
 
   const char* trigName = "ASYNC_DETECT_PERIODICALLY";
 
@@ -189,22 +199,31 @@ int main(int argc, char* argv[])
 
     switch ( keyPressed )
     {
+
+      case 'o':
+        log_time = !log_time;
+        break;
+
       case 'f':
         filterEnabled = !filterEnabled;
         chilitags3D.enableFilter(filterEnabled);
         break;
+
       case 'w':
         alphaQ *= 10.0f;
         chilitags3D.setFilterProcessNoiseCovariance(alphaQ*Q);
         break;
+
       case 's':
         alphaQ /= 10.0f;
         chilitags3D.setFilterProcessNoiseCovariance(alphaQ*Q);
         break;
+
       case 'e':
         alphaR *= 10.0f;
         chilitags3D.setFilterObservationNoiseCovariance(alphaR*R);
         break;
+
       case 'd':
         alphaR /= 10.0f;
         chilitags3D.setFilterObservationNoiseCovariance(alphaR*R);
@@ -251,6 +270,11 @@ int main(int argc, char* argv[])
     cv::putText(outputImage,
         cv::format("Detection trigger: %s (press 't' to toggle)", trigName),
         cv::Point(8,68),
+        cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color);
+
+    cv::putText(outputImage,
+        "(press 'o' to log fps)",
+        cv::Point(8,84),
         cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color);
 
     //cv::putText(outputImage,
@@ -347,6 +371,12 @@ int main(int argc, char* argv[])
 
     p << osc::EndMessage << osc::EndBundle;
     socket.Send( p.Data(), p.Size() );
+
+    double now = (double)getTickCount();
+    double secs_elapsed = (now - t)/getTickFrequency();
+    t = now;
+    if (log_time)
+      cout << (1./secs_elapsed) << " fps of target " << fps << endl;
 
     cv::imshow("plab chilitags", outputImage);
   }
