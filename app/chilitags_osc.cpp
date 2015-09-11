@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
   cv::namedWindow("plab chilitags");
 
   char keyPressed;
-  bool filterEnabled = true;
+  bool filterEnabled = false;
 
   cv::Mat Q = (cv::Mat_<float>(7,7) <<
       1e-3f,  0,      0,      0,      0,      0,      0,
