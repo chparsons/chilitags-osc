@@ -305,7 +305,7 @@ int main(int argc, char* argv[])
     p << osc::BeginBundleImmediate << osc::BeginMessage( "/tags" );
 
     //length
-    p << (int)tags3d.size(); 
+    p << (int)tags3d.size() + 1; 
 
     for ( auto& tag : tags3d )
     {
@@ -377,6 +377,21 @@ int main(int argc, char* argv[])
             cv::FONT_HERSHEY_SIMPLEX, 0.5f, AXIS_COLORS[i-1]);
       }
     }
+
+    p << "1000"
+        //size
+        << (float)DEFAULT_SIZE 
+        //corners
+        << 100.0f << 100.0f
+        << 100.0f << 100.0f
+        << 100.0f << 100.0f
+        << 100.0f << 100.0f
+        //translation
+        << 100.0f
+        << 100.0f
+        << 100.0f;
+
+    //cout << "send: " << tags3d.size() << endl;
 
     p << osc::EndMessage << osc::EndBundle;
     socket.Send( p.Data(), p.Size() );
