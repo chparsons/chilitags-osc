@@ -304,11 +304,15 @@ int main(int argc, char* argv[])
 
     p << osc::BeginBundleImmediate << osc::BeginMessage( "/tags" );
 
-    //length
+    //length + 1 (magic tag: id 1000)
     p << (int)tags3d.size() + 1; 
 
+    int i = 0;
+    int max_tags = 13;
     for ( auto& tag : tags3d )
     {
+      if (i++ > max_tags) continue;
+
       string id = tag.first;
       string idxs = ofSplitString( id, "_" )[1];
       int idx = std::atoi( idxs.c_str() );
